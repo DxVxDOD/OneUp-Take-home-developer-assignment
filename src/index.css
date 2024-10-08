@@ -28,6 +28,15 @@
   right: 0;
 }
 
+.band-span[data-commission] {
+  position: relative;
+}
+
+.band-span[data-commission]:after {
+  content: attr(data-commission) "%";
+  padding-left: 20px;
+}
+
 progress[value] {
   appearance: none;
   border: none;
@@ -37,7 +46,7 @@ progress[value] {
   border-radius: 5px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5) inset;
   position: relative;
-  margin: 0 0 1.5em;
+  margin-bottom: 5px;
 }
 
 progress[value]::-webkit-progress-bar {

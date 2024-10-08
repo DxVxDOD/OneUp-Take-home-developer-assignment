@@ -6,7 +6,7 @@ type Band = {
   value: number;
   tier: string;
   id: string;
-  commission: number;
+  commissionPerc: number;
   high: number;
 };
 
@@ -15,28 +15,35 @@ const starterData: Band[] = [
     value: 0,
     tier: "0-5k",
     id: "011c73e9-5211-41b5-8c77-b184856105b4",
-    commission: 0,
+    commissionPerc: 0,
     high: 50,
   },
   {
     value: 0,
-    tier: "10-15k",
+    tier: "5-10k",
     id: "fd6c7fa1-2286-4310-8b1d-dd18813009f2",
-    commission: 10,
+    commissionPerc: 10,
     high: 100,
+  },
+  {
+    value: 0,
+    tier: "10k-15k",
+    id: "18545c18-1bc3-4973-8274-c5fde73abde0",
+    commissionPerc: 15,
+    high: 150,
   },
   {
     value: 0,
     tier: "15k-20k",
     id: "18545c18-1bc3-4973-8274-c5fde73abde0",
-    commission: 15,
-    high: 150,
+    commissionPerc: 20,
+    high: 200,
   },
   {
     value: 0,
     tier: "20k+",
     id: "c4f03363-97aa-4460-bec9-4a0bba7611a9",
-    commission: 20,
+    commissionPerc: 25,
     high: 200,
   },
 ];
@@ -52,7 +59,7 @@ export default function Widget() {
     const totalSum = parseInt(comissionForm.value);
     const updated = [...values];
     if (totalSum > max) {
-      updated.forEach((band) => (band.value = 100));
+      updated.forEach((band) => (band.value = 50));
       setValues(updated);
     } else if (totalSum < starterData[0].high) {
       updated.forEach((band) => (band.value = 0));
@@ -70,7 +77,7 @@ export default function Widget() {
 
       let i = 0;
       while (i < tiers) {
-        updated[i].value = 100;
+        updated[i].value = 50;
         totalSumCopy -= 50;
         i++;
       }
