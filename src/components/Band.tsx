@@ -14,6 +14,7 @@ export const Band = ({ value, tier }: ProgressBand) => {
           <span className="">{value}</span>
         </div>
       </progress>
+      <span className="band-span">commission</span>
     </>
   );
 };
