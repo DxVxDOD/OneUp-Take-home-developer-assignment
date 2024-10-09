@@ -1,6 +1,10 @@
 import { FormEvent, useState } from "react";
 import { useForm } from "../hooks/useForm";
 import { Band } from "./Band";
+import { wrapInPromise } from "../utils/promiseWrapper";
+import { numberParser } from "../utils/numberParser";
+import toast from "react-hot-toast";
+import { getErrorMessage } from "../utils/errorHandling";
 
 export type Commission = {
   commissionPerc: number;
@@ -79,10 +83,18 @@ export default function Widget() {
 
   const commissionForm = useForm("number");
 
-  function handleTotalSumChange(e: FormEvent) {
+  async function handleTotalSumChange(e: FormEvent) {
     e.preventDefault();
+    let totalSum: number;
+    try {
+      totalSum = numberParser(parseInt(commissionForm.value));
+    } catch (err) {
+      const error_str = getErrorMessage(err);
+      toast.error("Error: please use numbers, " + error_str);
+      return;
+    }
+
     const max = starterData[starterData.length - 1].high;
-    const totalSum = parseInt(commissionForm.value);
     const updated = [...values];
     if (totalSum > max) {
       for (let i = 0; i < updated.length - 1; i++) {

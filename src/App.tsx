@@ -1,12 +1,11 @@
-import { useState } from "react";
 import Widget from "./components/Widget";
+import { Toaster } from "react-hot-toast";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <main>
+        <Toaster />
         <Widget />
       </main>
     </>
