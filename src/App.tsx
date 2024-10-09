@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 function App() {
   return (
     <>
-      <main>
+      <main className="main">
         <Toaster />
         <Widget />
       </main>
