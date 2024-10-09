@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 export type Commission = {
   commissionPerc: number;
   currCommission: number;
-  maxComission: number;
+  maxCommission: number;
 };
 
 type Band = {
@@ -27,7 +27,7 @@ const starterData: Band[] = [
     commission: {
       commissionPerc: 0,
       currCommission: 0,
-      maxComission: 0,
+      maxCommission: 0,
     },
   },
   {
@@ -38,7 +38,7 @@ const starterData: Band[] = [
     commission: {
       commissionPerc: 10,
       currCommission: 0,
-      maxComission: 0,
+      maxCommission: 0,
     },
   },
   {
@@ -49,7 +49,7 @@ const starterData: Band[] = [
     commission: {
       commissionPerc: 15,
       currCommission: 0,
-      maxComission: 0,
+      maxCommission: 0,
     },
   },
   {
@@ -60,7 +60,7 @@ const starterData: Band[] = [
     commission: {
       commissionPerc: 20,
       currCommission: 0,
-      maxComission: 0,
+      maxCommission: 0,
     },
   },
   {
@@ -71,22 +71,23 @@ const starterData: Band[] = [
     commission: {
       commissionPerc: 25,
       currCommission: 0,
-      maxComission: 0,
+      maxCommission: 0,
     },
   },
 ];
 
-export function useComissionWidget() {
+export function useCommissionWidget() {
   const [values, setValues] = useState<Band[]>(starterData);
   const commissionForm = useForm("number");
 
   // Initializing the maximum commission values avoiding incorrect data display in case of changes on the back end.
   for (let i = 0; i < starterData.length - 1; i++) {
-    starterData[i].commission.maxComission =
+    starterData[i].commission.maxCommission =
       50 * starterData[i].commission.commissionPerc;
   }
 
-  function handleComissonChange(e: FormEvent) {
+  const [totalCommission, setTotalCommission ] = useState(0);
+  function handleCommissionChange(e: FormEvent) {
     e.preventDefault();
 
     // Extra safety if a not a number gets through.
@@ -106,21 +107,23 @@ export function useComissionWidget() {
     for (let i = 0; i < updated.length - 1; i++) {
       updated[i].value = 0;
       updated[i].commission.currCommission = 0;
-      updated[i].commission.maxComission =
+      updated[i].commission.maxCommission =
         50 * updated[i].commission.commissionPerc;
     }
 
+    // Clearing and initializing the array at the last index.
     const last_index = updated.length - 1;
-    updated[last_index].commission.maxComission = 0;
+    updated[last_index].commission.maxCommission = 0;
     updated[last_index].value = 0;
     updated[last_index].commission.currCommission = 0;
 
     if (totalSum >= lastElementHigh) {
       for (let i = 0; i < updated.length - 1; i++) {
         updated[i].value = 5000;
-        const maxComission = 50 * updated[i].commission.commissionPerc;
-        updated[i].commission.maxComission = maxComission;
-        updated[i].commission.currCommission = maxComission;
+        const maxCommission = 50 * updated[i].commission.commissionPerc;
+        updated[i].commission.maxCommission = maxCommission;
+        updated[i].commission.currCommission = maxCommission;
+        setTotalCommission((prev) => prev + maxCommission );
       }
 
       const currCommission = Math.floor(
@@ -128,6 +131,7 @@ export function useComissionWidget() {
       );
       updated[last_index].commission.currCommission = currCommission;
       updated[last_index].value = 5000;
+      setTotalCommission((prev) => prev + currCommission);
 
       setValues(updated);
     } else if (totalSum < starterData[0].high) {
@@ -147,6 +151,7 @@ export function useComissionWidget() {
           const maxComission = 50 * updated[i].commission.commissionPerc;
           updated[i].value = 5000;
           updated[i].commission.currCommission = maxComission;
+          setTotalCommission((prev) => prev + maxComission);
         }
       }
 
@@ -156,9 +161,10 @@ export function useComissionWidget() {
       );
       updated[tiers].value = totalSumCopy;
       updated[tiers].commission.currCommission = currCommission;
+      setTotalCommission(prev => prev + currCommission)
 
       setValues(updated);
     }
   }
-  return { values, commissionForm, handleComissonChange };
+  return { values, commissionForm, handleCommissionChange, totalCommission };
 }

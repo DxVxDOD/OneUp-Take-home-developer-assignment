@@ -39,7 +39,7 @@ export const Band = ({
   return (
     <>
       <p className="band-p" data-value={perc}>
-        {tier}
+        <b>£{tier}</b>
       </p>
       <progress ref={progressRef} max="5000" value={value} className="html5">
         <div className="progress-bar">
@@ -47,12 +47,11 @@ export const Band = ({
         </div>
       </progress>
       <span className="band-span">
-        Commission: {commission.currCommission}{" "}
+        <b>Commission: £{commission.currCommission}{" "}
         {index === length - 1 && 100 === perc
-          ? ""
-          : `/ ${commission.maxComission}`}
+          ? " £"
+          : `/ £${commission.maxCommission}`}</b>
       </span>
-      <span data-commission={commission} className="band-span"></span>
     </>
   );
 };
