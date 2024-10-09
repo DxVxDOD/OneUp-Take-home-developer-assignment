@@ -86,11 +86,11 @@ export function useCommissionWidget() {
       50 * starterData[i].commission.commissionPerc;
   }
 
-  const [totalCommission, setTotalCommission ] = useState(0);
+  const [totalCommission, setTotalCommission] = useState(0);
   function handleCommissionChange(e: FormEvent) {
     e.preventDefault();
 
-    // Extra safety if a not a number gets through.
+    // Extra safety if not a number gets through.
     let totalSum: number;
     try {
       totalSum = numberParser(parseInt(commissionForm.value));
@@ -103,7 +103,7 @@ export function useCommissionWidget() {
     const lastElementHigh = starterData[starterData.length - 1].high;
     const updated = [...values];
 
-    // Clearing and initializing the array.
+    // Clearing and re-initializing the array.
     for (let i = 0; i < updated.length - 1; i++) {
       updated[i].value = 0;
       updated[i].commission.currCommission = 0;
@@ -123,7 +123,7 @@ export function useCommissionWidget() {
         const maxCommission = 50 * updated[i].commission.commissionPerc;
         updated[i].commission.maxCommission = maxCommission;
         updated[i].commission.currCommission = maxCommission;
-        setTotalCommission((prev) => prev + maxCommission );
+        setTotalCommission((prev) => prev + maxCommission);
       }
 
       const currCommission = Math.floor(
@@ -161,7 +161,7 @@ export function useCommissionWidget() {
       );
       updated[tiers].value = totalSumCopy;
       updated[tiers].commission.currCommission = currCommission;
-      setTotalCommission(prev => prev + currCommission)
+      setTotalCommission((prev) => prev + currCommission);
 
       setValues(updated);
     }

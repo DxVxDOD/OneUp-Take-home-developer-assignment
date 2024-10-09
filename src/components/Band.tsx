@@ -47,10 +47,12 @@ export const Band = ({
         </div>
       </progress>
       <span className="band-span">
-        <b>Commission: £{commission.currCommission}{" "}
-        {index === length - 1 && 100 === perc
-          ? " £"
-          : `/ £${commission.maxCommission}`}</b>
+        <b>
+          Commission: £{commission.currCommission}{" "}
+          {index === length - 1 && 100 === perc
+            ? " £"
+            : `/ £${commission.maxCommission}`}
+        </b>
       </span>
     </>
   );

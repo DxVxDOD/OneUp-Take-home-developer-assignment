@@ -19,7 +19,7 @@ export default function Widget() {
           className="widget-button"
           aria-label="Button for submitting the provided revenue input value."
         >
-         <b>Submit</b> 
+          <b>Submit</b>
         </button>
         <ul className="widget-ul">
           {values.map((band, i) => (
@@ -34,7 +34,9 @@ export default function Widget() {
             </li>
           ))}
         </ul>
-        <span><b>Total commission: £{totalCommission}</b></span>
+        <span>
+          <b>Total commission: £{totalCommission}</b>
+        </span>
       </form>
     </>
   );
