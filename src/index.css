@@ -28,15 +28,6 @@
   right: 0;
 }
 
-.band-span[data-commission] {
-  position: relative;
-}
-
-.band-span[data-commission]:after {
-  content: attr(data-commission) "%";
-  padding-left: 20px;
-}
-
 progress[value] {
   appearance: none;
   border: none;

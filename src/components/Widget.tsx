@@ -2,12 +2,18 @@ import { FormEvent, useState } from "react";
 import { useForm } from "../hooks/useForm";
 import { Band } from "./Band";
 
+export type Commission = {
+  commissionPerc: number;
+  currCommission: number;
+  maxComission: number;
+};
+
 type Band = {
   value: number;
   tier: string;
   id: string;
-  commissionPerc: number;
   high: number;
+  commission: Commission;
 };
 
 const starterData: Band[] = [
@@ -15,80 +21,109 @@ const starterData: Band[] = [
     value: 0,
     tier: "0-5k",
     id: "011c73e9-5211-41b5-8c77-b184856105b4",
-    commissionPerc: 0,
-    high: 50,
+    high: 5000,
+    commission: {
+      commissionPerc: 0,
+      currCommission: 0,
+      maxComission: 0,
+    },
   },
   {
     value: 0,
     tier: "5-10k",
     id: "fd6c7fa1-2286-4310-8b1d-dd18813009f2",
-    commissionPerc: 10,
-    high: 100,
+    high: 10000,
+    commission: {
+      commissionPerc: 10,
+      currCommission: 0,
+      maxComission: 0,
+    },
   },
   {
     value: 0,
     tier: "10k-15k",
     id: "18545c18-1bc3-4973-8274-c5fde73abde0",
-    commissionPerc: 15,
-    high: 150,
+    high: 15000,
+    commission: {
+      commissionPerc: 15,
+      currCommission: 0,
+      maxComission: 0,
+    },
   },
   {
     value: 0,
     tier: "15k-20k",
-    id: "18545c18-1bc3-4973-8274-c5fde73abde0",
-    commissionPerc: 20,
-    high: 200,
+    id: "522776be-9c59-419c-bbd7-dc92718b682f",
+    high: 20000,
+    commission: {
+      commissionPerc: 20,
+      currCommission: 0,
+      maxComission: 0,
+    },
   },
   {
     value: 0,
     tier: "20k+",
     id: "c4f03363-97aa-4460-bec9-4a0bba7611a9",
-    commissionPerc: 25,
-    high: 200,
+    high: 20000,
+    commission: {
+      commissionPerc: 25,
+      currCommission: 0,
+      maxComission: 0,
+    },
   },
 ];
 
 export default function Widget() {
   const [values, setValues] = useState<Band[]>(starterData);
 
-  const comissionForm = useForm("number");
+  const commissionForm = useForm("number");
 
   function handleTotalSumChange(e: FormEvent) {
     e.preventDefault();
     const max = starterData[starterData.length - 1].high;
-    const totalSum = parseInt(comissionForm.value);
+    const totalSum = parseInt(commissionForm.value);
     const updated = [...values];
     if (totalSum > max) {
-      updated.forEach((band) => (band.value = 50));
+      for (let i = 0; i < updated.length - 1; i++) {
+        updated[i].value = 5000;
+        updated[i].commission.maxComission =
+          50 * updated[i].commission.commissionPerc;
+        updated[i].commission.currCommission =
+          50 * updated[i].commission.commissionPerc;
+      }
+
+      const last_index = updated.length - 1;
+      updated[last_index].commission.currCommission =
+        (totalSum / 100) * updated[last_index].commission.commissionPerc;
+      updated[last_index].value = 5000;
+
       setValues(updated);
     } else if (totalSum < starterData[0].high) {
       updated.forEach((band) => (band.value = 0));
       updated[0].value = totalSum;
+
       setValues(updated);
     } else {
       let tiers = 0;
       let totalSumCopy = structuredClone(totalSum);
 
-      values.forEach((band) => {
-        if (band.high <= totalSum) {
+      for (let i = 0; i < values.length; i++) {
+        if (values[i].high <= totalSum) {
           tiers++;
-        }
-      });
+          totalSumCopy -= 5000;
 
-      let i = 0;
-      while (i < tiers) {
-        updated[i].value = 50;
-        totalSumCopy -= 50;
-        i++;
+          updated[i].value = 5000;
+          updated[i].commission.maxComission =
+            50 * updated[i].commission.commissionPerc;
+          updated[i].commission.currCommission =
+            50 * updated[i].commission.commissionPerc;
+        }
       }
 
       updated[tiers].value = totalSumCopy;
-      i++;
-
-      while (i < updated.length) {
-        updated[i].value = 0;
-        i++;
-      }
+      updated[tiers].commission.currCommission =
+        (totalSumCopy / 100) * updated[tiers].commission.commissionPerc;
 
       setValues(updated);
     }
@@ -97,12 +132,16 @@ export default function Widget() {
   return (
     <article className="widget-container">
       <form onSubmit={handleTotalSumChange}>
-        <input {...comissionForm} name="Commission" />
+        <input {...commissionForm} name="Commission" />
         <button>Sub</button>
         <ul>
           {values.map((band) => (
             <li key={band.id} className="widget-li">
-              <Band value={band.value} tier={band.tier} />
+              <Band
+                commission={band.commission}
+                value={band.value}
+                tier={band.tier}
+              />
             </li>
           ))}
         </ul>
