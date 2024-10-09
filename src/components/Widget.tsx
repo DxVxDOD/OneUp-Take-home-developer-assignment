@@ -1,7 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useForm } from "../hooks/useForm";
 import { Band } from "./Band";
-import { wrapInPromise } from "../utils/promiseWrapper";
 import { numberParser } from "../utils/numberParser";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../utils/errorHandling";
@@ -79,12 +78,18 @@ const starterData: Band[] = [
 ];
 
 export default function Widget() {
+  // Initializing the maximum commission values avoiding incorrect data display in case of changes on the back end.
+  for (let i = 0; i < starterData.length - 1; i++) {
+    starterData[i].commission.maxComission =
+      50 * starterData[i].commission.commissionPerc;
+  }
   const [values, setValues] = useState<Band[]>(starterData);
-
   const commissionForm = useForm("number");
 
   async function handleTotalSumChange(e: FormEvent) {
     e.preventDefault();
+
+    // Extra safety if a not a number gets through.
     let totalSum: number;
     try {
       totalSum = numberParser(parseInt(commissionForm.value));
@@ -94,20 +99,34 @@ export default function Widget() {
       return;
     }
 
-    const max = starterData[starterData.length - 1].high;
+    const lastElementHigh = starterData[starterData.length - 1].high;
     const updated = [...values];
-    if (totalSum > max) {
+
+    // Clearing and initializing the array.
+    for (let i = 0; i < updated.length - 1; i++) {
+      updated[i].value = 0;
+      updated[i].commission.currCommission = 0;
+      updated[i].commission.maxComission =
+        50 * updated[i].commission.commissionPerc;
+    }
+
+    const last_index = updated.length - 1;
+    updated[last_index].commission.maxComission = 0;
+    updated[last_index].value = 0;
+    updated[last_index].commission.currCommission = 0;
+
+    if (totalSum >= lastElementHigh) {
       for (let i = 0; i < updated.length - 1; i++) {
         updated[i].value = 5000;
-        updated[i].commission.maxComission =
-          50 * updated[i].commission.commissionPerc;
-        updated[i].commission.currCommission =
-          50 * updated[i].commission.commissionPerc;
+        const maxComission = 50 * updated[i].commission.commissionPerc;
+        updated[i].commission.maxComission = maxComission;
+        updated[i].commission.currCommission = maxComission;
       }
 
-      const last_index = updated.length - 1;
-      updated[last_index].commission.currCommission =
-        (totalSum / 100) * updated[last_index].commission.commissionPerc;
+      const currCommission = Math.floor(
+        (totalSum / 100) * updated[last_index].commission.commissionPerc,
+      );
+      updated[last_index].commission.currCommission = currCommission;
       updated[last_index].value = 5000;
 
       setValues(updated);
@@ -125,17 +144,18 @@ export default function Widget() {
           tiers++;
           totalSumCopy -= 5000;
 
+          const maxComission = 50 * updated[i].commission.commissionPerc;
           updated[i].value = 5000;
-          updated[i].commission.maxComission =
-            50 * updated[i].commission.commissionPerc;
-          updated[i].commission.currCommission =
-            50 * updated[i].commission.commissionPerc;
+          updated[i].commission.currCommission = maxComission;
         }
       }
 
+      // After looping through the array and only updating the necessary fields, we update the last one that is yet to be finished.
+      const currCommission = Math.floor(
+        (totalSumCopy / 100) * updated[tiers].commission.commissionPerc,
+      );
       updated[tiers].value = totalSumCopy;
-      updated[tiers].commission.currCommission =
-        (totalSumCopy / 100) * updated[tiers].commission.commissionPerc;
+      updated[tiers].commission.currCommission = currCommission;
 
       setValues(updated);
     }
@@ -147,12 +167,14 @@ export default function Widget() {
         <input {...commissionForm} name="Commission" />
         <button>Sub</button>
         <ul>
-          {values.map((band) => (
+          {values.map((band, i) => (
             <li key={band.id} className="widget-li">
               <Band
                 commission={band.commission}
                 value={band.value}
                 tier={band.tier}
+                index={i}
+                length={values.length}
               />
             </li>
           ))}

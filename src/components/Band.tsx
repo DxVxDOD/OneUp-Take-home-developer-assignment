@@ -4,12 +4,21 @@ type ProgressBand = {
   value: number;
   tier: string;
   commission: Commission;
+  index: number;
+  length: number;
 };
 
-export const Band = ({ value, tier, commission }: ProgressBand) => {
+export const Band = ({
+  value,
+  tier,
+  commission,
+  index,
+  length,
+}: ProgressBand) => {
+  const perc = Math.floor((value / 100) * 2);
   return (
     <>
-      <p className="band-p" data-value={(value / 100) * 2}>
+      <p className="band-p" data-value={perc}>
         {tier}
       </p>
       <progress max="5000" value={value} className="html5">
@@ -18,7 +27,10 @@ export const Band = ({ value, tier, commission }: ProgressBand) => {
         </div>
       </progress>
       <span className="band-span">
-        Commission: {commission.currCommission} / {commission.maxComission}
+        Commission: {commission.currCommission}{" "}
+        {index === length - 1 && 100 === perc
+          ? ""
+          : `/ ${commission.maxComission}`}
       </span>
       <span data-commission={commission} className="band-span"></span>
     </>
